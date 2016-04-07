@@ -1,0 +1,121 @@
+<style type="text/css">
+.nav td {
+	text-align: center;
+	padding: 2px;
+	margin: 2px;
+	background-color: #CCC;
+}
+ul.hengxiang {
+}
+.nav th {
+	background-color: #663;
+}
+.hengxiang li {
+	background-color: #996;
+	list-style-type: none;
+	display: inline;
+}
+</style>
+<layout name="layout" />
+
+
+
+<script language="javascript" type="text/javascript">
+ $(function(){
+	 //使用这个选择器，只有第一个CHECKBOX才能够弹出
+	$("#id").click(function(){alert(this.value + this.id)});
+ });
+
+$("#cz input").click(function(){
+alert('123');
+} );
+
+function postCheckboxArray1(id,value){
+	//调用被改变值的ID：onchange="postCheckboxArray(this.id);"
+	//var sel_aid = $("input:checked"); //那么..首先获取选中的checkbox值
+	var arr = new Array();
+	/*$.each(
+		sel_aid,function(i,obj){
+			arr[i] = $(obj).val();
+		}
+	);*/
+	arr[0]=value;
+	arr[1]=id;
+	
+	//alert("selected objs:\n"+arr.toString()); //debug 先弹出一次看要提交的数据
+	
+	$.post(
+		"__URL__/tests",{"aid":arr},function(data){
+			//alert(data); //debug 输出 php那边接收并处理的数组
+			$("#led").val(value);
+		}
+	);
+}
+
+function postCheckboxArray(id){
+	//调用被改变值的ID：onchange="postCheckboxArray(this.id);"
+	var sel_aid = $("input:checked"); //那么..首先获取选中的checkbox值
+	var arr = new Array();
+	$.each(
+		sel_aid,function(i,obj){
+			arr[i] = $(obj).val();
+		}
+	);
+	
+	//alert("selected objs:\n"+arr.toString()); //debug 先弹出一次看要提交的数据
+	
+	$.post(
+		"__URL__/tests",{"aid":id},function(data){
+			alert(data); //debug 输出 php那边接收并处理的数组
+		}
+	);
+}
+</script>
+
+
+
+<form action="__URL__/users" method="post" name="from1">
+<ul class="hengxiang">
+<li><a href="__URL__/users_add">增加用户</a></li>
+
+</ul>
+<div class="nav">
+<table width="600" border="0" cellspacing="2" cellpadding="0">
+  <tr>
+    <th>选择</th>
+    <th>ID</th>
+    <th>帐号</th>
+    <th>姓名</th>
+    <th>权限 </th>
+    <th>操作</th>
+  </tr>
+  
+  	<foreach name="user_list" item="value1" key="key1">
+	<tr>
+    <td><input name="check[]" type="checkbox" id="{$value1.id}" onchange="postCheckboxArray1('{$value1.id}','{$value1.user}');" value="{$value1.user}" />
+      <label for="check[]">选择</label></td>
+    <td>{$value1.id}</td>
+    <td>{$value1.user}</td>
+    <td>{$value1.name}</td>
+    <td><label for="isadmin[]">
+    	<input type="checkbox" name="isadmin[]" id="{$value1.id}" value="{$value1.user}"  checked=<eq name="admin" value="1">checked</eq> 
+        >
+		管理员</label>
+    </td>
+    <td>
+    	<li style="display:inline;"><a href="__URL__/users/id/{$value1.id}">删除</a></li>
+    </td>
+	</tr>
+    </foreach>
+
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+</div>
+</form>

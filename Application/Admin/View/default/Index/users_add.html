@@ -1,0 +1,42 @@
+<style type="text/css">
+td {
+}
+input {
+	height: 40px;
+}
+</style>
+<layout name="layout" />
+<form action="__URL__/changdi_add" method="post" name="cdadd">
+<table width="500" border="1" cellpadding="0" cellspacing="2">
+  <tr>
+    <td align="center">增加用户 </td>
+    </tr>
+  <tr>
+    <td align="center">帐号:
+      <input name="user" type="text" size="32" maxlength="32" /></td>
+    </tr>
+  <tr>
+    <td align="center">姓名:
+      <input name="name" type="text" size="32" maxlength="32" /></td>
+    </tr>
+  <tr>
+    <td align="center">密码:
+      <input name="password" type="text" size="32" maxlength="32" /></td>
+    </tr>
+  <tr>
+    <td align="center">确认:
+      <input name="confirm" type="text" size="32" maxlength="32" /></td>
+    </tr>
+  <tr>
+    <td align="center" valign="middle">
+      <input type="radio" name="radio" id="user" value="user" /><label for="user">普通用户</label>
+      <input type="radio" name="radio" id="admin" value="admin" /><label for="admin">管理员</label>    
+    </td>
+    </tr>
+  <tr>
+    <td align="right">    
+      <input type="hidden" name="shangji_id" value="{$shangji_id}"  />
+      <input name="submit" type="submit" value="增加用户" />    </td>
+    </tr>
+</table>
+</form>

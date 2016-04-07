@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="/Public/a/a.css" />
+<link rel="stylesheet" type="text/css" href="/Public/jquery-ui.css" />
+<script type="text/javascript" src="/Public/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="/Public/jquery-ui-datepicker.js"></script>
+<title>华中师范大学乒羽中心预订系统后台管理</title>
+<style type="text/css">
+
+</style>
+<!--[if lte IE 7]>
+<style>
+.content { margin-right: -1px; } /* 此 1px 负边距可以放置在此布局中的任何列中，且具有相同的校正效果。 */
+ul.nav a { zoom: 1; }  /* 缩放属性将为 IE 提供其需要的 hasLayout 触发器，用于校正链接之间的额外空白 */
+</style>
+<![endif]-->
+</head>
+
+<body>
+
+<div class="container">
+  <div class="header">
+	<!--p>&nbsp;</p-->
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr bgcolor="#1295D8">
+            <td width="400" rowspan="2" >
+                <a href="#"><img src="/Public/hd_logo.png" alt="Logo" name="Insert_logo" width="100%" height="115" id="Insert_logo" style="display: block;" /></a>
+            </td>
+            <td height="49" align="right" bgcolor="#1295D8">
+                <ul style=list-style:none;margin:0;>
+                    <li style="display:inline"><a href="/index.php">网站首页</a></li>
+                    <li style="display:inline"><a href="__MODULE__/Index/user_edit">用户:{$loginuser['user']}</a></li>
+                    <li style="display:inline"><a href="__MODULE__/Index/logout">注销</a></li>
+                    <li style="display:inline">时间:{$serverdate}</li>
+                </ul>
+            </td>
+          </tr>
+          <tr bgcolor="#1295D8">
+            <td height="59" valign="bottom" bgcolor="#1295D8">
+                <div class="menu">
+                    <ul style=list-style:none;margin:0;>
+                        <foreach name="changguanlist" item="name" key="id" >
+                            <li style="display:inline"><a href="/index.php?id={$id}">{$name}场地当天预订状态</a></li>
+                        </foreach>
+                    </ul>
+                </div>
+            </td>
+          </tr>
+        </table>
+	<!-- end .header -->
+	</div>
+    
+<!--hr /-->
+
+  <div class="sidebar1">
+    <ul class="nav">
+		<foreach name="menulist" item="menu" key="id" >
+            	<notempty name="menu.zicaidan">
+                	<li><a href="#">{$menu.name}</a></li>
+                    
+                        <foreach name="menu.zicaidan" item="value" key="zid">
+                          <li class="childmenu">
+                            	<a href="__MODULE__/Index/{$menu.url}/?cgid={$value.id}">{$value.name}</a>
+                          </li>
+                        </foreach>
+                 
+                <else />
+                	<li><a href="__MODULE__/Index/{$menu.url}/">{$menu.name}</a></li>
+                </notempty>
+			
+		</foreach>
+    </ul>
+    <p>&nbsp;</p>
+    <!-- end .sidebar1 -->
+  </div>
+  <div class="content">
+    
+    {__CONTENT__}
+    
+    <!-- end .content --></div>
+  <div class="footer">
+    <hr />
+  欢迎您预订华中师范大学乒羽中心场地!
+  请您在开始前十分钟到场地交费或电话通知，否则管理员会取消您的预订！
+  <br/>联系方式：曹老师 67867162
+
+    <!-- end .footer --></div>
+  <!-- end .container --></div>
+</body>
+</html>

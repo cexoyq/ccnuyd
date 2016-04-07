@@ -1,0 +1,219 @@
+
+<script language="javascript" type="text/javascript">
+function postCheckboxArray1(id,checked,username,userid,cdid,sjid,sdate){
+	//调用被改变值的ID：onchange="postCheckboxArray(this.id);"
+	//var sel_aid = $("input:checked"); //那么..首先获取选中的checkbox值
+	var arr = new Array();
+	/*$.each(
+		sel_aid,function(i,obj){
+			arr[i] = $(obj).val();
+		}
+	);*/
+	arr[0]=id;
+	arr[1]=new Boolean(checked);	//将CHECKBOX的$(this).attr('checked')状态转化成为BOOL值TRUE或FALSE
+	//arr[2]=username;	//用户名称，非姓名
+	var yuding_kehu=$('input#kehuxingming').val();
+	arr[2]=yuding_kehu;
+	//console.log("arr[2]:" + $('input#kehuxingming').val());
+	arr[3]=userid;			//取得用户的ID号
+	arr[4]=cdid;	//场地的ID号
+	arr[5]=sjid;	//时间的ID号
+	arr[6]=sdate;	//选择的日期
+	var color1 ="#99F";
+	var color2 ="#C60";
+	var color3 ="#696";
+	//$("div#ledshow").text(arr);
+	
+	//alert("selected objs:\n"+arr.toString()); //debug 先弹出一次看要提交的数据
+	$.post("__URL__/ajax_server1",{"aid":arr},function(data){
+			//alert(data); //debug 输出 php那边接收并处理的数组
+			//data=parseInt(data,10);
+			data=decodeURIComponent(data);
+			ret=eval('('+data+')');	//分割json格式为数组
+			ret_id=parseInt(ret['id']);
+			ret_code=parseInt(ret['code']);
+			ret_str=ret['str'];
+			ret_user=ret['user'];
+			$("div#ledshow").text(ret_str);
+			
+			if(ret_code == 1){
+				//预订成功
+				$('input#'+ret_id).attr("checked","true");
+				$('#'+ret_id).css('background-color','{$Think.config.color2}');
+				$('label#'+ret_id+">span").text(ret_user);
+			}else if(ret_code == 2){
+				//取消预订
+				$('input#'+ret_id).attr("checked","");
+				$('#'+ret_id).css('background-color','{$Think.config.color3}');
+				$('label#'+ret_id+">span").text("预订");
+			}else if(ret_code == 3){
+				//取消他人预订
+				$('input#'+ret_id).attr("checked","");
+				$('#'+ret_id).css('background-color','{$Think.config.color3}');
+				$('label#'+ret_id+">span").text("预订");
+			}else if(ret_code >=100){
+				//什么都不成功
+				
+			}
+			/*if(ret_code == 1){*/
+		});
+}//function postCheckboxArray1
+
+$(function(){
+	//$(".htmltabs").tabs();	//实现jquery tab页面
+	
+	$("#selectdate").datepicker({ minDate: -0, maxDate: "+2M +0D" });
+	$("#tb tr").mouseover(function(){  
+            $(this).addClass("tdcolor1");  
+    });  
+    $("#tb tr").mouseout(function(){  
+            $(this).removeClass("tdcolor1");  
+    });
+	$("#tb tr").click(function () {
+		$("td", $(this)).css("background", "red");
+	}); 
+	function nowdate(){
+		var mydate = new Date();
+		var str = "" + mydate.getFullYear() + "-";
+		str += (mydate.getMonth()+1) + "-";
+		str += mydate.getDate();
+		return str;
+	};
+	function checkEndTime(){  
+		var selectd=Date.parse($("#selectdate").val());
+		//var selectDate=new Date(selectd);
+		var serverd=Date.parse($("#serverdate").val());
+		//var nowDate=new Date(serverd);
+		var sss=(serverd-selectd);
+		sss=sss/1000/60/60;
+		var jg=4;		//以4个小时为间隔点允许预订，必须提前4个小时
+		//alert(sss);		//返回2个日期之间的小时间隔
+		if(0 < sss && sss< 2)
+		{
+		  //默认serverd是从8:00开始算起，如果为0则表示现在时间是8点，可以预订8+jg
+		  $("input[value='07-08']").attr("disabled","disabled");  
+		  $("input[value='08-09']").attr("disabled","disabled"); 
+		  $("input[value='09-10']").attr("disabled","disabled"); 
+		  $("input[value='10-11']").attr("disabled","disabled"); 
+		}else if(0 < sss && sss < 4){
+		  $("input[value='07-08']").attr("disabled","disabled");  
+		  $("input[value='08-09']").attr("disabled","disabled"); 
+		  $("input[value='09-10']").attr("disabled","disabled"); 
+		  $("input[value='10-11']").attr("disabled","disabled"); 
+		  $("input[value='11-12']").attr("disabled","disabled");  
+		  $("input[value='12-13']").attr("disabled","disabled"); 
+		  $("input[value='13-14']").attr("disabled","disabled"); 
+		}else if(0 < sss && sss < 8){
+		  $("input[value='07-08']").attr("disabled","disabled");  
+		  $("input[value='08-09']").attr("disabled","disabled"); 
+		  $("input[value='09-10']").attr("disabled","disabled"); 
+		  $("input[value='10-11']").attr("disabled","disabled"); 
+		  $("input[value='11-12']").attr("disabled","disabled");  
+		  $("input[value='12-13']").attr("disabled","disabled"); 
+		  $("input[value='13-14']").attr("disabled","disabled"); 
+		  $("input[value='14-15']").attr("disabled","disabled");  
+		  $("input[value='15-16']").attr("disabled","disabled"); 
+		  $("input[value='16-17']").attr("disabled","disabled"); 
+		  $("input[value='17-18']").attr("disabled","disabled"); 
+		  $("input[value='18-19']").attr("disabled","disabled");  
+		  $("input[value='19-20']").attr("disabled","disabled"); 
+		}else if(sss>10){
+			$("input[name='sel[]']").attr("disabled","disabled");
+		}
+		/*if(nowDate>selectDate){  
+			$("input[name='sel[]']").attr("disabled","disabled");  
+		}else if(nowDate == selectDate) {
+			alert("日期一样");
+			$("input[name='sel[]']").attr("disabled","disabled");  
+			//$("input[name='sel[]']").attr("checked","true");  
+		}*/
+	};
+	checkEndTime();
+});
+</script>
+<style type="text/css">
+.tdcolor1 {
+	background-color: #F96;
+}
+.tdcolor2 {
+	background-color: #09C;
+}
+</style>
+
+
+<layout name="layout" />
+<div style="float:left;width:100%;">
+<form action="__URL__/yuding" method="get" id="form1">
+	选择日期：<input name="selectdate" type="text" id="selectdate" value="{$selectdate}" size="12" readonly />
+    <input type=hidden name="cgid" value="{$cgid}" />
+    <input type=hidden name="serverdate" id="serverdate" value="{$serverdate}" />
+    <input name="submit" type="submit" value="选择预订日期" />
+    <if condition="$admin eq 1">
+    	姓名：<input id='kehuxingming' name="kehuxingming" type="text" value="{$username}" size="8" maxlength="4" />
+    </if>
+	<if condition="$admin eq 1">
+    	<input name="xqsubmit" type="button" 
+        	onclick="location.href ='__URL__/plyuding?cgid={$cgid}' " 
+            value="批量预订"/>
+    </if>
+</form>
+</div>
+
+<div style="width:100%;">
+<form action="__URL__/goyuding" method="get" id="form2">
+    <table width="100%" border="1" cellspacing="0" cellpadding="0" name="tb">
+      <tr  height="50">
+        <td style="font-size:12px; text-align:center; background-color:{$Think.config.color5}">场地/时间</td>
+        <foreach name="shijianlist" item="value1" key="id1" >
+        		<td style="font-size:12px; text-align:center; background-color:{$Think.config.color5}">{$value1.name}</td>
+        </foreach>
+      </tr>
+                    <!--下面定义变量，用于给TD的ID和LABEL的ID自增-->
+                    <assign name="tdid" value="1" />		
+                    <assign name="id2id" value="1" />
+                    <assign name="id3id" value="1" />
+      		<foreach name="tlists" item="value2" key="id2" >
+            	<tr height="50">
+                	<td style="font-size:12px; text-align:center; background-color:{$Think.config.color5}">
+                    	<label>{$value2.changdi}</label>
+                    </td>
+                    <foreach name="value2.row" item="value3" key="id3" >
+                        	<td style="font-size:12px;" id="{$tdid++}" 
+                                <if condition="$value3.value eq 1 ">
+                                	<if condition="$admin eq 1">
+                                            bgcolor="{$Think.config.color1}" 
+                                            >
+                                            <label id="{$tdid}">
+                                            <input id="{$tdid}" value="{$value3.name}" name="sel[]" type="checkbox" checked="checked"  onchange="postCheckboxArray1(this.id,$(this).attr('checked'),'{$value3.user}','{$value3.user_id}','{$value2.id}','{$value3.id}','{$selectdate}');" />
+                                            <span>{$value3.user}</span>
+                                            </label>
+                                    <else />
+                                        <if condition="$value3.user eq $username">
+                                            bgcolor="{$Think.config.color1}" 
+                                            >
+                                            <label id="{$tdid}">
+                                            <input id="{$tdid}" value="{$value3.name}" name="sel[]" type="checkbox" checked="checked"  onchange="postCheckboxArray1(this.id,$(this).attr('checked'),'{$value3.user}','{$value3.user_id}','{$value2.id}','{$value3.id}','{$selectdate}');" />
+                                            <span>{$value3.user}</span>
+                                            </label>
+                                        <else />
+                                                bgcolor="{$Think.config.color2}" 
+                                                >
+                                                {$value3.user}
+                                        </if>
+									</if>
+                              <else />
+                                	bgcolor="{$Think.config.color3}">
+									<label id="{$tdid}">
+                                    <input id="{$tdid}" value="{$value3.name}" name="sel[]" type="checkbox" onchange="postCheckboxArray1(this.id,$(this).attr('checked'),'{$value3.user}','{$value3.user_id}','{$value2.id}','{$value3.id}','{$selectdate}');" />
+                                    <span>预订</span>
+                                    </label>
+                                </if>
+                            </td>
+
+                  </foreach>
+                </tr>
+            </foreach>
+    </table>
+</form>
+</div>
+<div style="width:80%; color:#7C3603" id="ledshow"></div>

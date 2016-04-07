@@ -1,0 +1,118 @@
+<script language="javascript" type="text/javascript">
+function postCheckboxArray1(id,checked,username,cdid,sjid,sdate){
+	//调用被改变值的ID：onchange="postCheckboxArray(this.id);"
+	//var sel_aid = $("input:checked"); //那么..首先获取选中的checkbox值
+	var arr = new Array();
+	/*$.each(
+		sel_aid,function(i,obj){
+			arr[i] = $(obj).val();
+		}
+	);*/
+	arr[0]=id;
+	arr[1]=new Boolean(checked);	//将CHECKBOX的$(this).attr('checked')状态转化成为BOOL值TRUE或FALSE
+	arr[2]=username;	//用户名称，非姓名
+	arr[3]=cdid;	//场地的ID号
+	arr[4]=sjid;	//时间的ID号
+	arr[5]=sdate;	//选择的日期
+	var color1 ="#99F";
+	var color2 ="#C60";
+	var color3 ="#696";
+	$("div#ledshow").text(arr);
+	//alert("selected objs:\n"+arr.toString()); //debug 先弹出一次看要提交的数据
+	$.post(
+		"__URL__/ajax_server",{"aid":arr},function(data){
+			//alert(data); //debug 输出 php那边接收并处理的数组
+			data=parseInt(data,10);
+			if(arr[1] == true){
+				if(data == 1){
+					$("div#ledshow").text("预订成功！");
+					$('label#'+arr[0]+">span").text(arr[2]);
+				}else if(date == 0){
+					$("div#ledshow").text("预订失败，请刷新页面后重试！");
+					$('input#'+arr[0]).attr("checked","");
+				}
+			}else if(arr[1] == false){
+				if(data == 1){
+					$("div#ledshow").text("取消预订成功！");
+					$('label#'+arr[0]+">span").text("预订");
+				}else if(date == 0){
+					$("div#ledshow").text("取消预订失败，请刷新页面后重试！");
+				}
+			}
+			
+		}
+	);
+}
+
+$(function(){
+	$("#selectdate").datepicker(); 
+	function nowdate(){
+		var mydate = new Date();
+		var str = "" + mydate.getFullYear() + "-";
+		str += (mydate.getMonth()+1) + "-";
+		str += mydate.getDate() + "-";
+		return str;
+	};
+	function checkEndTime(){  
+		var selectd=Date.parse($("#selectdate").val());
+		//var selectDate=new Date(selectd);
+		var serverd=Date.parse($("#serverdate").val());
+		//var nowDate=new Date(serverd);
+		var sss=(serverd-selectd);
+		sss=sss/1000/60/60;
+		var jg=4;		//以4个小时为间隔点允许预订，必须提前4个小时
+		//alert(sss);		//返回2个日期之间的小时间隔
+		if(0 < sss && sss< 2)
+		{
+		  //默认serverd是从8:00开始算起，如果为0则表示现在时间是8点，可以预订8+jg
+		  $("input[value='07-08']").attr("disabled","disabled");  
+		  $("input[value='08-09']").attr("disabled","disabled"); 
+		  $("input[value='09-10']").attr("disabled","disabled"); 
+		  $("input[value='10-11']").attr("disabled","disabled"); 
+		}else if(0 < sss && sss < 4){
+		  $("input[value='07-08']").attr("disabled","disabled");  
+		  $("input[value='08-09']").attr("disabled","disabled"); 
+		  $("input[value='09-10']").attr("disabled","disabled"); 
+		  $("input[value='10-11']").attr("disabled","disabled"); 
+		  $("input[value='11-12']").attr("disabled","disabled");  
+		  $("input[value='12-13']").attr("disabled","disabled"); 
+		  $("input[value='13-14']").attr("disabled","disabled"); 
+		}else if(0 < sss && sss < 8){
+		  $("input[value='07-08']").attr("disabled","disabled");  
+		  $("input[value='08-09']").attr("disabled","disabled"); 
+		  $("input[value='09-10']").attr("disabled","disabled"); 
+		  $("input[value='10-11']").attr("disabled","disabled"); 
+		  $("input[value='11-12']").attr("disabled","disabled");  
+		  $("input[value='12-13']").attr("disabled","disabled"); 
+		  $("input[value='13-14']").attr("disabled","disabled"); 
+		  $("input[value='14-15']").attr("disabled","disabled");  
+		  $("input[value='15-16']").attr("disabled","disabled"); 
+		  $("input[value='16-17']").attr("disabled","disabled"); 
+		  $("input[value='17-18']").attr("disabled","disabled"); 
+		  $("input[value='18-19']").attr("disabled","disabled");  
+		  $("input[value='19-20']").attr("disabled","disabled"); 
+		}else if(sss>10){
+			$("input[name='sel[]']").attr("disabled","disabled");
+		}
+		/*if(nowDate>selectDate){  
+			$("input[name='sel[]']").attr("disabled","disabled");  
+		}else if(nowDate == selectDate) {
+			alert("日期一样");
+			$("input[name='sel[]']").attr("disabled","disabled");  
+			//$("input[name='sel[]']").attr("checked","true");  
+		}*/
+	};
+	checkEndTime();
+});
+</script>
+
+<layout name="layout" />
+
+<form action="__URL__/yuding" method="get" id="form1">
+<div style="float:left;">
+	选择日期：<input type="text" name="selectdate" id="selectdate" value="{$selectdate}" readonly />
+    <input type=hidden name="cgid" value="{$cgid}" />
+    <input type=hidden name="serverdate" id="serverdate" value="{$serverdate}" />
+    <input name="submit" type="submit" value="选择预订日期" />
+</div>
+</form>

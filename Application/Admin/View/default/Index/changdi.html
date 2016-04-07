@@ -1,0 +1,78 @@
+<style type="text/css">
+td {
+	text-align: center;
+}
+.menuli {
+	text-align: center;
+	display: inline;
+	padding: 5px;
+}
+.tdJi0 {
+	background-color: #CCF;
+}
+th {
+	background-color: #963;
+}
+.tdJi1 {
+	background-color: #999;
+}
+.tdJi2 {
+	background-color: #CCC;
+}
+</style>
+<layout name="layout" />
+<form action="__URL__/changdi_add" method="post" name="cdadd0">
+<table width="600" border="0" cellspacing="2" cellpadding="0">
+  <tr class="tdJi0">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>
+   	  请输入要增加的场馆名称：<input name="cdname" type="text" size="32" maxlength="32" />
+      <input type="hidden" name="shangji_id" value="0"  />
+      <input name="submit" type="submit" value="增加场馆" />
+	</td>
+  </tr>
+</table>
+</form>
+
+<table width="600" cellspacing="2" cellpadding="0">
+  <tr>
+    <th colspan="2">选择</th>
+    <th>ID</th>
+    <th>名称</th>
+    <th>操作</th>
+  </tr>
+<foreach name="cdlist" item="value1" key="id1" >
+  <tr  class="tdJi1">
+    <td width="80"><input type="checkbox" name="selt" id="selt" />
+    <label for="selt">选择</label></td>
+    <td>&nbsp;</td>
+    <td>{$value1.id}</td>
+    <td>{$value1.name}</td>
+    <td><li class="menuli"><a href="__URL__/changdi_edit/id/{$value1.id}/cdname_old/{$value1.name}">修改</a></li>
+    	<li class="menuli"><a href="__URL__/changdi_del/id/{$value1.id}/shangji_id/{$value1.shangji_id}">删除</a></li>
+        <li class="menuli"><a href="__URL__/changdi_add/shangji_id/{$value1.id}">增加场地</a></li>
+	</td>
+  </tr>
+  <foreach name="value1.cd" item="value11" key="id11">
+      <tr  class="tdJi2">
+        <td></td>
+        <td width="80"><input type="checkbox" name="selt" id="selt" />
+    <label for="selt">选择</label></td>
+        <td>{$value11.id}</td>
+        <td>{$value11.name}</td>
+        <td>
+        	<li class="menuli"><a href="__URL__/changdi_edit/id/{$value11.id}/cdname_old/{$value11.name}">修改</a></li>
+        	<li class="menuli"><a href="__URL__/changdi_del/id/{$value11.id}/shangji_id/{$value11.shangji_id}">删除</a></li>
+		</td>
+      </tr>
+  </foreach>
+</foreach>
+  <tr>
+    <td colspan="2">&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>
+	</td>
+  </tr>
+</table>

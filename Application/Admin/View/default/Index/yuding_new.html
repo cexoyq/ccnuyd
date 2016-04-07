@@ -1,0 +1,257 @@
+<style type="text/css">
+.datepicker_highlight {	/*datepicker高亮*/
+	border: none !important;
+	background: none !important;
+	overflow: hidden;
+	padding-top: 1px;
+	padding-right: 0;
+	padding-bottom: 1px;
+	padding-left: 1px;
+}  
+.datepicker_highlight a {	/*datepicker高亮*/
+	background: #6699CC !important;
+	border: 1px #88a276 solid !important;
+	color: #000;
+}  
+.td_disable{	/*禁用时的背景色*/
+	background-color: #E0E0E0;
+	color: #ACACAC;
+}
+.td_selected{	/*选中时的状态*/
+	background-color: #6699CC;
+	color: #000000;
+}
+.td_show{		/*正常时DIV的状态-背景色*/
+	background-color: #EAEAEA;
+	color: #000000;
+}
+.div_cd, .div_sj {	/*正常时DIV的状态*/
+	text-align: center;
+	margin: 1px;
+	padding-top: 2px;
+	border: thin solid #FFFFFF;
+	float: left;
+	height: 30px;
+	width: 100px;
+	font-size: 100%;
+}
+.yuding_new_div_left{
+}
+div .div_cd:hover, .div_sj:hover{
+	background-color: #C1C1C1;
+	cursor: pointer;
+}
+</style>
+<script language="javascript" type="text/javascript">
+function ck_date(){
+/*检查日期是否已选择*/
+	if(cyd.sel_date == 0){
+		alert("请选择日期！");
+	}
+}
+function click_div_cd(obj_div){
+	cds.set_selected(obj_div);//取消上一个的选中状态，设置本次的这个DIV选中状态
+	cyd.div_enabled();//启用时间DIV框
+	cyd.post_sel_cd(obj_div.attr('id'),cyd.sel_date);//ajax post数据
+	/*
+	$("div#"+cyd.sel_cd_id+".div_cd").
+		removeClass("td_selected").addClass("td_show");
+	//移去上一次选中的DIV的高亮状态
+	cyd.sel_cd_id=obj_div.attr("id");	//保存新的场地ID号
+	obj_div.removeClass("td_show").
+		addClass("td_selected");	//设置选中的DIV成高亮
+	*/
+	console.log("click div id:"+obj_div.attr("id"));
+	//alert(obj_div.html());
+};
+function click_div_sj(obj_div){
+	cyd.sel_sj_id=obj_div.attr("id");	//保存时间ID号
+	//alert(obj_div.html());
+	div_id=obj_div.attr('id');
+	//$("div#"+div_id).children("label").text("dfdaf");
+	obj_check_sj=$(":enabled:checkbox[id='"+div_id+"']");//选择点击了DIV的checkbox
+	obj_check_sj.attr("checked",!obj_check_sj.attr("checked"));//选中或反向
+};
+</script>
+
+<layout name="layout" />
+<!--左边选择栏-->
+<div class="yuding_new_div_left" style="margin:1px; float:left;">
+  <div id="div_date1" class="div_datepicker"><!--显示日期的DIV-->
+    </div>
+
+    <div style="width:420px; float:left; border:solid thin #FBFBFB; padding:15px; margin:1px;">
+    <!--显示场地的DIV-->
+        <foreach name="list_cd" item="v" key="k" >
+            <div class="div_cd td_show" name="{$v.name}" id="{$v.id}" onclick="click_div_cd($(this))">
+                {$v.name}
+          </div>
+        </foreach>
+    </div>
+    <div style="width:420px; float:left; border:solid thin #FBFBFB; padding:15px; margin:1px;">
+    <!--显示时间的DIV-->
+        <foreach name="list_sj" item="v" key="k" >
+            <div class="div_sj td_show" name="{$v.name}" id="{$v.id}" onclick="click_div_sj($(this))">
+                    <input type="checkbox" class="checkbox_sj" name="{$v.name}" value="{$v.id}" sjid="{$v.id}" id="{$v.id}" />{$v.name}
+            </div>
+        </foreach>
+    </div>
+</div><!--左边选择栏-->
+<!--右边信息栏-->
+<div style="width:100px; float:left; font-size:10px;">
+	<table id="table_list_day_yuding">
+    	<tr id="tr_bt">
+        	<td>预订信息</td>
+        </tr>
+    	<tr id="tr_body_list_yuding">
+        </tr>
+    </table>
+</div><!--右边信息栏-->
+<script language="javascript" type="text/javascript">
+$(function(){
+	window.cyd=new CYuding({title:"Hi"});//初始化类
+	window.cds=new CDomSet();
+	cyd.sel_date=cyd.nowdate();	//用户没有选择日期时，设置为当天的日期
+	//var cyd=new CYuding();
+	//设置多选框为禁用状态，设置DIV文字为禁用状态
+	cyd.div_disabled();
+	//$(".htmltabs").tabs();	//实现jquery tab页面
+	$("#div_date1").datepicker({
+		numberOfMonths: 3,
+		minDate: '-0', 
+		maxDate: '+2M +0D',
+		dateFormat: 'yy-mm-dd',
+		//setDate:cyd.nowdate(),
+		onSelect: function(dateText, inst){
+		//当在日期面板选中一个日期后触发此事件，参数为选择的日期和当前日期插件的实例
+			//var cyd=new CYuding({ title: "Hi" });
+			cyd.sel_date=dateText;	//保存选择的日期
+			cyd.post_sel_date(dateText);	//ajax调用
+			//alert(cYuding.sel_date);
+		},
+		beforeShowDay: function(_date){
+		/*在日期控件显示面板之前，每个面板上的日期绑定时都触发此事件，
+		参数为触发事件的日期。调用函数后，必须返回一个数组：[0]此日期
+		是否可选(true/false)，[1]自定义的CSS样式名称(""表示默认)，
+		[2]当鼠标移至上面出现一段提示的内容。*/
+			var date1='2/29/2016';
+			//alert(_date.toString() + ":" + new Date(date1).toString());
+			if(_date.toString() == new Date(date1).toString()){
+				//return [true,'datepicker_highlight','已预订过！'];
+			}
+			//重选日期后，要清除DIV场地的选中状态：或模拟点击某个场地的DIV框
+			$("div#"+".div_cd").removeClass("td_selected").addClass("td_show");
+			return [true, ''];//显示其它没预订过的日期
+		}
+		});
+/*************$.CYuding类 开始******************/
+	function CYuding(arg){
+	//用这种方式定义的可以在DW里自动列出公有成员
+	/*调用：var cyd=new CYuding({ title: "Hi" });*/
+		var name = "你好";     //这个是私有变量，外部无法访问
+		this.sel_date = 0; //公有成员，用于保存用户选择的日期
+		this.sel_cd_id = 0;	//公有成员，用于保存用户选择的场地的ID
+		this.sel_sj_id = 0;	//公有成员，用于保存用户选择的时间的ID
+		this.post_sel_date = function(sel_date){
+		/*加上了this，就是公有方法了，外部可以访问。*/
+		/*ajax post 日期和场馆ID，取得这个日期的预订信息，并显示在右侧边栏*/
+			var arr=new Array("{$cg_id}",sel_date);
+			console.log("ajax post data:"+arr.toString());
+			$.post("__URL__/ajax_newyd_sel_date",
+			{"ajax_data":arr},function(data){	/*ajax post提交数据*/
+				console.log("ajax return data:"+data);
+				data=decodeURIComponent(data);
+				ret=eval('('+data+')');	//分割json格式为数组
+				console.log("ajax return data:"+ret.toString());
+				$('tr#tr_body_list_yuding').remove();	//先删除前面的信息
+				div_disabled();//禁用时间DIV框
+				$.each(ret,function(n,value){/*开始遍历对像*/ 
+					console.log("场地："+value.changdi_name+
+								" 时间："+value.shijian_name);    	
+					tr_append(value.changdi_name,value.shijian_name);
+				}); /*end each 遍历对像*/ 
+				ret_id=parseInt(ret['id']);
+				ret_code=parseInt(ret['code']);
+			});
+		};
+		this.post_sel_cd = function(sel_cd_id,sel_date){
+		/*ajax post 日期和点击的场地ID，取得返回场地的时间预订信息，并显示在右侧*/
+			var arr=new Array(sel_cd_id,sel_date);
+			console.log("ajax post data:"+arr.toString());
+			$.post("__URL__/ajax_newyd_sel_cd",
+			{"ajax_data":arr},function(data){	/*ajax post提交数据*/
+				console.log("ajax return data:"+data);
+				data=decodeURIComponent(data);
+				ret=eval('('+data+')');	//分割json格式为数组
+				console.log("ajax return data:"+ret.toString());
+				$.each(ret,function(n,value){/*开始遍历对像*/ 
+					div_sj_set(value.id);//禁用已被预订了的时间DIV框
+					console.log("id："+value.id+"name："+value.name);    	
+				}); /*end each 遍历对像*/ 
+				ret_id=parseInt(ret['id']);
+			});
+		};
+		this.post_yuding=function(){
+		};
+		tr_append = function(cd_name,sj_name){
+		/*类私有函数，生成单元行，并插入到表格中*/
+			str="<tr id='tr_body_list_yuding'><td>"+
+				cd_name+"</td><td>"+sj_name+"</td></tr>";
+			$("table#table_list_day_yuding").append(str);
+		};
+		div_sj_set=function(div_id){
+			//设置与已被使用了的时间段的ID号一致的多选框禁用,DIV框禁用状态
+			$(":checkbox[id='"+div_id+"']").attr("disabled",true);
+			$(":checkbox[id='"+div_id+"']").parent("#"+
+				div_id).addClass("td_disable").removeClass("td_show");			//$(".div_sj#"+div_id).removeClass("div_sj").addClass("td_disable");
+			//$("#"+div_id + ".div_sj").remove();
+		};
+		this.div_disabled=function(){div_disabled();};
+		div_disabled=function(){
+		//设置场地和时间禁用；多选框为禁用状态，设置DIV文字为禁用状态
+		  $(":checkbox.checkbox_sj").attr("disabled",true);
+		  $(":checkbox.checkbox_sj").parent("div")
+		  		.addClass("td_disable").removeClass("td_show");
+		};
+		this.div_enabled=function(){div_enabled();};
+		div_enabled=function(){
+			//设置多选框为使用状态，设置DIV文字为启用状态
+			$(":checkbox.checkbox_sj").attr("disabled",false);
+			$(":checkbox.checkbox_sj").parent("div").
+				removeClass("td_disable").addClass("td_show");
+		};
+		this.nowdate=function(){
+		//返回当前日期，格式：yy-mm-dd
+			var mydate = new Date();
+			var str = "" + mydate.getFullYear() + "-";
+			str += (mydate.getMonth()+1) + "-";
+			str += mydate.getDate();
+			return str;
+		};
+		return this;
+    };/*$.CYuding结束*/
+/*************cYuding类 结束******************/
+/*************cDomgr类 开始******************/
+/*用于管理HTML元素的禁用、启用、高亮等
+	var cx=new CDomSet();
+	cx.er();
+*******************************************/
+	function CDomSet(arg){
+		var old_obj_div=$("div#"+cyd.sel_cd_id+".div_cd");	
+			//保存一上次选中的DIV
+		this.color="red";
+		this.set_selected=function(obj_div){
+		/*函数说明：取消上一个点击的DIV选中状态，设置本次点击的DIV选中状态*/
+			old_obj_div.removeClass("td_selected").addClass("td_show");
+				//取消选中状态，设置成默认状态
+			old_obj_div=obj_div;
+			old_obj_div.removeClass("td_show").addClass("td_selected");	
+				//设置选中的DIV成高亮
+		};
+    };
+	CDomSet.prototype.fk=function(){};//定义公有方法
+	CDomSet.prototype.ee="ee";	//定义公有属性
+	window['CDomSet']=CDomSet;//加这句后，能在网页任意地方var xc=new CDomgr();	
+/*************cDomgr类 结束******************/
+});/*END $(function({}))*/
+</script>

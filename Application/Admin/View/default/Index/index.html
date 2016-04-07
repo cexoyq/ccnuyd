@@ -1,0 +1,47 @@
+<style type="text/css">
+td {
+	font-size: 14px;
+	text-align: center;
+	vertical-align: middle;
+	word-wrap: break-word;
+	margin: 2px;
+	padding: 2px;
+}
+th {
+	text-align: center;
+	vertical-align: middle;
+	padding: 6px;
+	margin: 5px;
+}
+table {
+	background-color: #CCC;
+}
+</style>
+<layout name="layout" />
+<div>
+  <table width="99%" border="1" align="center" cellpadding="0" cellspacing="0">
+    <tr>
+      <th width="100">时间</th>
+      <th width="100">操作类型</th>
+      <th width="100">操作人</th>
+      <th width="420">信息</th>
+      <th width="80">结果</th>
+    </tr>
+    <foreach name="msgtable" item="value1" key="id1" >
+    <tr>
+      <td>{$value1.msg_time}</td>
+      <td>{$value1.caozuo}</td>
+      <td>{$value1.from_user}</td>
+      <td>{$value1.neirong}</td>
+      <td>{$value1.jieguo}</td>
+    </tr>
+    </foreach>
+    <tr>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+</div>

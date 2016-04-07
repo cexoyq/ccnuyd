@@ -1,0 +1,237 @@
+<script language="javascript" type="text/javascript">
+function ajaxpost(){
+	if(arryd.length < 1){
+		alert("首先选择开始日期与结束日期，\n然后点击要预订的场地！\n最后才能点我完成预订！");
+		return 0;}
+	var arr_tmp=new Array
+		("{$cg_id}","{$loginuser.id}","{$loginuser.user}");
+	arryd.unshift(arr_tmp);	//将场馆的id和用户的id号加入到数组最前面
+	/*post给AJAX的数组格式：
+	[{"30","2","熊义"},{"2-2","2016/3/1","5","2"},
+	{"2-2","2016/3/8","5","2"},{"2-2","2016/3/15","5","2"}]*/
+	console.log("HTML arryd:" + arryd.toString() + "\n");
+	$.post("__URL__/ajax_plyuding",{"arr":arryd},function(data)
+	{
+/*返回的data数组对像格式
+[{"id":"2-2","ret":"0"},{"id":"2-2","ret":"0"},......]*/
+		//data=decodeURIComponent(data);	//URL解码
+		console.log("HTML ajax ret data:" + data + "\n");
+		ret=eval('('+data+')');	//分割json格式为数组
+		var i = ret.length;
+		var status="";
+		while (i--) {/*对像数组循环*/
+			var obj=ret[i];	//将数组赋值给对像，以方便调用
+			var obj_dd=$("dd[ddid='"+obj.ddid+"']");
+			console.log("obj.ret:"+ret[i].ret+" obj.ddid:"+ret[i].ddid+" obj.tdid:"+ret[i].tdid+" i:" + i);
+			
+			if(obj.ret == 0){
+				status=" 成功";
+				obj_dd.removeClass("td_background_color").addClass("td_hight_light");
+			}else if(obj.ret == -1){
+				status=" 不成功";
+				obj_dd.removeClass("td_hight_light").addClass("td_err_status");
+			}else if(obj.ret >= 1){
+				status=" 成功(换)";
+				obj_dd.removeClass("td_background_color").addClass("td_hight_light");
+			}
+			obj_dd.html(obj_dd.html()+status);
+		}/*end while*/
+	});/*end post function*/
+	arryd.shift();//删除数组最前面的开始日期与结束日期
+	$("#xzriqi").remove();
+	$("#tb_list").remove();
+	$("#div_xsyuding").width("80%");
+	//$('div#div_xsyuding').children("dl#dl_xsyd").children("dd").width("80%");
+}//function postCheckboxArray1
+
+function chkeck_date(start_date,end_date){
+/*检查各个输入框是否输入正确，特别是开始与结束时间*/
+	//alert(start_date.valueOf() + ":" + end_date);
+	if(isNaN(start_date) || isNaN(end_date)){
+		//alert("请选择开始日期和结束日期！" + kstime + ":" + jstime);
+		$("#ksriqi").addClass("input_hight_light");
+		$("#jsriqi").addClass("input_hight_light");
+		return "请选择开始日期和结束日期！";	//开始与结束日期没有输入
+	}else{
+		//$("#ksriqi").removeClass("border_hight_light");
+		return null;
+	}
+	return null;	//返回不正确的值
+}
+function ret_day(){
+	//_date,start_date,end_date;
+	alert("日期：" + end_date-start_date);
+}
+function addyd(obj){
+	var start_date=new Date($("#ksriqi").val());
+	var end_date=new Date($("#jsriqi").val());
+	var arr_tmp=new Array();//初始化临时数组
+	var obj_td=obj;
+	/*start 判断输入正确性*/
+	var x=chkeck_date(start_date,end_date);
+	if(x){alert(x);return 0;}	//判断输入是否正常
+	/*end 判断输入正确性*/
+	//objdiv.css("background","#F96");
+	var sjid=obj_td.attr("sjid");
+	var xqid=obj_td.attr("xqid");
+	var tdid=obj_td.attr("id");		//obj，单元格td的id号
+	var xqname=obj_td.attr("xqname");
+	var sjname=obj_td.attr("sjname");
+	obj_td.html("预订");
+	obj_td.removeClass("td_background_color").addClass("td_hight_light");
+	obj_td.attr("yjyd","1");		//设置属性为已经预订
+	/*start 分析选择时间段内的星期几到每个日期*/
+	$("#ledshow").html("");
+	//$('div#div_xsyuding').children("dl#dl_xsyd").children("dd").remove();
+	//根据日期循环，注意i自加是给日期加一天，判断出选择的星期数的日期
+	var i=start_date;
+	for(i;i<=end_date;i.setDate(i.getDate()+1)){
+	//i.getDate()+1，i的日期自加1天
+		if(i.getDay() == xqid)
+		//如果这个日期的星期数刚好等于选择的星期数
+		{
+			/*start 判断星期相同，则将数组压入全局数组，便于AJAX时调用*/
+			arr_tmp=[];
+			ddid++;					//dd的id号自加，用于生成唯一编号
+			arr_tmp[0]=ddid;		//全局唯一编号，用于显示dd时，dd上的id号
+			arr_tmp[1]=i.toLocaleDateString();	//选择的星期数转化成的日期
+			arr_tmp[2]=$("#select_yxcd").val();	//选择的场地的ID号
+			arr_tmp[3]=sjid;					//时间的id号
+			arr_tmp[4]=tdid;			//td单元格的id号，用于取消预订时删除它
+			arryd.push(arr_tmp);
+			var str="<dd class='xsyd_dd' id='" + tdid + "' ddid='"+ddid+"' sjid='" + sjid + "' xqid='" + xqid + "' >" + arr_tmp[1] + "，时间：" + sjname + "，场地：" + $("#select_yxcd").find("option:selected").text(); + "</dd>";
+			$('div#div_xsyuding').children("dl#dl_xsyd").append(str);
+			/*end 判断星期相同，则将数组压入全局数组，便于AJAX时调用*/
+		}/*end if*/
+	}/*end for*/
+	/*end 分析选择时间段内的星期几到每个日期*/
+	//console.log("arryd array:" + arryd + "\n");
+	//console.log("===================================\n");
+}
+function delyd(obj){
+	var obj_td=obj;
+	tdid=obj.attr('id');
+	obj_td.removeAttr("yjyd");		//设置属性为没有预订
+	obj_td.html("");
+	//objdiv.css("background","#063");
+	obj_td.addClass("td_background_color").removeClass("td_hight_light");
+	$('div#div_xsyuding').children("dl#dl_xsyd").children('#'+tdid).remove();
+	//$("dl dd").remove('dd[id==' + objid + ']');
+	var i = arryd.length;
+	while (i--) {
+		if(arryd[i][4] == tdid){
+			arryd.splice(i,1);
+		}
+	}
+}
+
+$(function(){
+	window.arryd=new Array();	//建立全局数组变量，用于保存用户的预订信息
+	window.ddid=1;
+	$("#ksriqi").datepicker({ minDate: "-0", maxDate: "+0M +10D" }); 
+	$("#jsriqi").datepicker({ minDate: "+0M +10D", maxDate: "+2M +0D" }); 
+	$(".tbody").click(function(){
+		//alert($(this).attr("id"));
+		if($(this).attr("yjyd") == 1){
+			delyd($(this));
+		}else{
+			addyd($(this));
+		}
+	});
+	$("input").change(function(){
+		$(this).removeClass("input_hight_light");
+	});
+});
+</script>
+<style type="text/css">
+.table_plyuding {
+	width: 100%;
+	float: left;
+	margin: 1px;
+	padding: 1px;
+}
+.table_plyuding tr {
+	background-color: #09C;
+	height: 30px;
+}
+.table_plyuding tr:hover {
+	background-color: #CCFF00;
+	cursor: pointer;
+}
+.table_plyuding td{
+	text-align: center;
+	margin: 1px;
+	padding: 1px;
+	border: 1px solid #963;
+}
+.xsyd_dd {	/*显示预订的信息，将字体变小*/
+	font-size:14px;
+}
+.td_hight_light {	/*用于预订的表格单元格,当点击单元格时高亮背景*/
+	background-color: #F96;
+}
+.td_background-color {	/*用于预订的表格单元格恢复没有选择预订时的背景*/
+	background-color: #09C;
+}
+.td_err_status {	/*用于预订的表格单元格出错时高亮显示*/
+	background-color: #C03;
+}
+.input_hight_light {	/*用于日期选择框提示没有输入日期*/
+	border: 1px solid #C06;
+	background-color:#F0C;
+}
+</style>
+
+<layout name="layout" />
+
+<div id="xzriqi" style="width:100%; padding:2px;">
+<form action="__URL__/ajax_yuding1" method="get" id="form1">
+  开始日期：
+    <input type="text" name="ksriqi" id="ksriqi" readonly />
+  结束日期：
+    <input type="text" name="jsriqi" id="jsriqi" readonly />
+    优先选择场地：				
+    <select name="select_yxcd" id="select_yxcd">
+    	<option value="0" selected="selected">不选择</option>
+	  <foreach name="arrCD" item="value" key="key" >
+       	<option value="{$value.id}">{$value.name}</option>
+        </foreach>
+    </select>
+    <select name="yudingfangshi">
+      <option value="1" selected="selected">每周重复</option>
+    </select>
+	<input name="预订" type="button" onclick="ajaxpost()" value="确认预订" />
+</form>
+</div>
+<div id="tb_list" style="width:69%; border-style:solid; border-width:1px; border-color:#CCC; float:left;">
+<table class="table_plyuding" >
+	<foreach name="tlist" item="value1" key="key1" >
+	<tr>
+		<td>{$value1[0].name}</td>	<!--竖向标题，时间，时间段名称-->
+		<foreach name='value1[1]' item='value2' key='key2'>
+			<if condition='$key1 eq 0 '>
+                <td id='xqbt' class="bt" sjid='{$value1[0].id}' xqid='{$value2.id}' sjname='{$value1[0].name}' xqname='{$value2.name}' >
+                    {$value2.name}
+                </td><!--横向标题-->
+			<else />
+				<td id='{$value2.id}-{$value1[0].id}' class='tbody' sjid='{$value1[0].id}' xqid='{$value2.id}' sjname='{$value1[0].name}' xqname='{$value2.name}'>
+                </td>
+			</if>
+		</foreach>
+	</tr>
+	</foreach>
+</table>
+</div>
+<div id="div_xsyuding" style="width:30%; border-style:solid; border-width:1px; border-color:#CCC; float:left;">
+    <dl id="dl_xsyd" class="dl_xsyd" style="">
+   	  <dt style="width:100%; height:20px; font-size:14px;">
+		批量选择的预订信息：
+      </dt>
+        <!--dd class="xsyd_dd" id='t1'>t1</dd-->
+    </dl>
+</div>
+<div style="width:70%;color:#7C3603" id="ledshow">
+led
+</div>
+
+

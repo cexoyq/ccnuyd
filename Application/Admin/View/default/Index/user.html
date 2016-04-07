@@ -1,0 +1,35 @@
+<style type="text/css">
+input {
+	height: 50px;
+	width: 300px;
+}
+</style>
+
+<layout name="layout" />
+<form action="__URL__/user_edit" method="post">
+  <input name="cdid" type="hidden" value="{$cdid}" />
+    <table width="600" border="0" cellspacing="2" cellpadding="0">
+      <tr>
+        <td align="right">旧密码</td>
+        <td>
+        <input name="password_old" type="text" id="password_old" value="{$password_old}" /></td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td align="right">新密码</td>
+        <td><input type="text" name="password_new" id="password_new" value="{$password_old}" /></td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td align="right">确认</td>
+        <td>
+          <input type="text" name="password_confirm" id="password_confirm" value="{$password_old}" /></td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td align="right"><input name="submit" type="submit" value="确认修改密码" /></td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+</form>

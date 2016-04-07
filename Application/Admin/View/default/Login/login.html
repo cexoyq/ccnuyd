@@ -1,0 +1,38 @@
+<style type="text/css">
+.shurukuang {
+	width: 100%;
+	height: 30px;
+}
+.anniu {
+	height: 32px;
+}
+</style>
+<include file="Public/header" />
+<include file="Public/menu" />
+<form name="form1" method="post" action="__URL__/doLogin">
+<table width="300" border="0" align="center" cellpadding="2" cellspacing="2">
+  <caption>
+  用户登录
+  </caption>
+  <tr>
+    <td align="right" scope="col">用户名</td>
+    <th align="left" scope="col"><label for="name"></label>
+      <input name="user" type="text" class="shurukuang" id="user" size="18" maxlength="32"></th>
+  </tr>
+  <tr>
+    <td align="right">密码</td>
+    <td align="left"><label for="password"></label>
+      <input name="password" type="password" class="shurukuang" id="password" size="18" maxlength="32"></td>
+  </tr>
+  <tr>
+    <td align="right">&nbsp;</td>
+    <td align="right"><input name="Login" type="submit" class="anniu" id="Login" value="登陆"></td>
+  </tr>
+  <tr>
+    <td align="right">&nbsp;</td>
+    <td align="right"><input name="Reg" type="button" class="anniu" id="Reg" value="注册">      <input name="RetakePassword" type="button" class="anniu" id="RetakePassword" value="重置密码"></td>
+  </tr>
+  </table>
+</form>
+<hr>
+<include file="Public/footer" />
